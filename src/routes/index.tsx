@@ -14,7 +14,7 @@ function getHighlighter() {
   return highlighterPromise;
 }
 
-const SITE_URL = "https://cryptons.dev";
+const SITE_URL = "https://icon.coin2trans.com";
 const SITE_TITLE =
   "Coin2Trans Icon — Free Cryptocurrency Icons CDN for Developers (BTC, ETH, SOL & 70+)";
 const SITE_DESCRIPTION =
