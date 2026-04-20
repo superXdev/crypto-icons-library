@@ -29,7 +29,7 @@ export const Route = createFileRoute("/")({
       { title: SITE_TITLE },
       { name: "description", content: SITE_DESCRIPTION },
       { name: "keywords", content: SITE_KEYWORDS },
-      { name: "author", content: "Cryptons" },
+      { name: "author", content: "Coin2Trans Icon" },
 
       { property: "og:title", content: SITE_TITLE },
       { property: "og:description", content: SITE_DESCRIPTION },
