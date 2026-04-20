@@ -16,7 +16,7 @@ function getHighlighter() {
 
 const SITE_URL = "https://cryptons.dev";
 const SITE_TITLE =
-  "Cryptons — Free Cryptocurrency Icons CDN for Developers (BTC, ETH, SOL & 70+)";
+  "Coin2Trans Icon — Free Cryptocurrency Icons CDN for Developers (BTC, ETH, SOL & 70+)";
 const SITE_DESCRIPTION =
   "Free, open-source cryptocurrency icons hosted on a fast CDN. 70+ coins (Bitcoin, Ethereum, Solana, USDC) in color, black & white variants at 32, 64 and 128 px. MIT licensed — copy a URL and ship.";
 const SITE_KEYWORDS =
@@ -38,12 +38,12 @@ export const Route = createFileRoute("/")({
       { property: "og:image", content: `${SITE_URL}/og-image.png` },
       { property: "og:image:width", content: "1200" },
       { property: "og:image:height", content: "630" },
-      { property: "og:image:alt", content: "Cryptons — free cryptocurrency icons CDN" },
+      { property: "og:image:alt", content: "Coin2Trans Icon — free cryptocurrency icons CDN" },
 
       { name: "twitter:title", content: SITE_TITLE },
       { name: "twitter:description", content: SITE_DESCRIPTION },
       { name: "twitter:image", content: `${SITE_URL}/og-image.png` },
-      { name: "twitter:image:alt", content: "Cryptons — free cryptocurrency icons CDN" },
+      { name: "twitter:image:alt", content: "Coin2Trans Icon — free cryptocurrency icons CDN" },
     ],
     links: [{ rel: "canonical", href: SITE_URL }],
     scripts: [
@@ -56,7 +56,7 @@ export const Route = createFileRoute("/")({
               "@type": "WebSite",
               "@id": `${SITE_URL}/#website`,
               url: SITE_URL,
-              name: "Cryptons",
+              name: "Coin2Trans Icon",
               description: SITE_DESCRIPTION,
               inLanguage: "en",
               publisher: { "@id": `${SITE_URL}/#org` },
@@ -64,13 +64,13 @@ export const Route = createFileRoute("/")({
             {
               "@type": "Organization",
               "@id": `${SITE_URL}/#org`,
-              name: "Cryptons",
+              name: "Coin2Trans Icon",
               url: SITE_URL,
               logo: `${SITE_URL}/icon-512.png`,
             },
             {
               "@type": "SoftwareApplication",
-              name: "Cryptons Icons",
+              name: "Coin2Trans Icon",
               applicationCategory: "DeveloperApplication",
               operatingSystem: "Any",
               description: SITE_DESCRIPTION,
@@ -205,7 +205,7 @@ function Index() {
             <Sparkles className="h-4 w-4" />
           </div>
           <span className="font-mono text-sm tracking-tight">
-            cryptons<span className="text-primary">.dev</span>
+            coin2trans<span className="text-primary"> icon</span>
           </span>
         </div>
         <a
@@ -335,7 +335,7 @@ function Index() {
 
       <footer className="border-t border-border/60 py-4">
         <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-1 px-6 text-xs text-muted-foreground sm:flex-row">
-          <span>© {new Date().getFullYear()} cryptons.dev — Free for personal & commercial use.</span>
+          <span>© {new Date().getFullYear()} coin2trans icon — Free for personal & commercial use.</span>
           <span className="font-mono">Made for developers.</span>
         </div>
       </footer>
