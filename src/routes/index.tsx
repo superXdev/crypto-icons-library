@@ -1,7 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { Check, Copy, Github, Sparkles } from "lucide-react";
-import { codeToHtml } from "shiki";
+import { createHighlighter, type Highlighter } from "shiki";
+
+let highlighterPromise: Promise<Highlighter> | null = null;
+function getHighlighter() {
+  if (!highlighterPromise) {
+    highlighterPromise = createHighlighter({
+      themes: ["vitesse-dark"],
+      langs: ["html", "tsx", "css", "bash"],
+    });
+  }
+  return highlighterPromise;
+}
 
 const SITE_URL = "https://cryptons.dev";
 const SITE_TITLE =
@@ -158,12 +169,14 @@ function Index() {
 
   useEffect(() => {
     let cancelled = false;
-    codeToHtml(code, {
-      lang: lang === "jsx" ? "tsx" : lang,
-      theme: "vitesse-dark",
-    })
-      .then((out) => {
-        if (!cancelled) setHtml(out);
+    getHighlighter()
+      .then((hl) => {
+        if (cancelled) return;
+        const out = hl.codeToHtml(code, {
+          lang: lang === "jsx" ? "tsx" : lang,
+          theme: "vitesse-dark",
+        });
+        setHtml(out);
       })
       .catch(() => {
         if (!cancelled) setHtml(`<pre><code>${escapeHtml(code)}</code></pre>`);
