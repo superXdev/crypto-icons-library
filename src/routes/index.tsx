@@ -23,8 +23,8 @@ export const Route = createFileRoute("/")({
 });
 
 const CDN_BASE = "https://cdn.cryptons.dev";
-type Size = 32 | 64;
-type Variant = "color" | "black";
+type Size = 32 | 64 | 128;
+type Variant = "color" | "black" | "white";
 
 function buildPath(size: Size, variant: Variant, code: string) {
   return `${CDN_BASE}/${size}/${variant}/${code}.png`;
@@ -132,9 +132,9 @@ function Index() {
   };
 
   return (
-    <main className="min-h-screen">
+    <main className="flex min-h-screen flex-col">
       {/* Header */}
-      <header className="mx-auto flex max-w-5xl items-center justify-between px-6 py-6">
+      <header className="mx-auto flex w-full max-w-5xl items-center justify-between px-6 py-5">
         <div className="flex items-center gap-2">
           <div className="grid h-8 w-8 place-items-center rounded-lg bg-primary/15 text-primary">
             <Sparkles className="h-4 w-4" />
@@ -154,39 +154,39 @@ function Index() {
         </a>
       </header>
 
-      {/* Hero */}
-      <section className="mx-auto max-w-3xl px-6 pt-10 pb-10 text-center sm:pt-16">
-        <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-border bg-surface/50 px-3 py-1 text-xs text-muted-foreground">
-          <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-          Free & open source · MIT licensed
-        </div>
-        <h1 className="mx-auto mt-6 text-balance text-4xl font-semibold leading-[1.05] tracking-tight sm:text-6xl">
-          Crypto icons for{" "}
-          <span className="bg-gradient-to-r from-primary to-amber-200 bg-clip-text text-transparent">
-            every developer.
-          </span>
-        </h1>
-        <p className="mx-auto mt-5 max-w-xl text-balance text-base text-muted-foreground sm:text-lg">
-          A hosted CDN of cryptocurrency icons. Pick a size, pick a style, copy the snippet.
-        </p>
+      {/* Hero + Snippet (fits desktop without scroll) */}
+      <section className="mx-auto flex w-full max-w-4xl flex-1 flex-col justify-center px-6 pb-6">
+        <div className="text-center">
+          <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-border bg-surface/50 px-3 py-1 text-xs text-muted-foreground">
+            <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+            Free & open source · MIT licensed
+          </div>
+          <h1 className="mx-auto mt-4 text-balance text-3xl font-semibold leading-[1.05] tracking-tight sm:text-5xl">
+            Crypto icons for{" "}
+            <span className="bg-gradient-to-r from-primary to-amber-200 bg-clip-text text-transparent">
+              every developer.
+            </span>
+          </h1>
+          <p className="mx-auto mt-3 max-w-xl text-balance text-sm text-muted-foreground sm:text-base">
+            A hosted CDN of cryptocurrency icons. Pick a size, pick a style, copy the snippet.
+          </p>
 
-        {/* Path scheme */}
-        <div className="mx-auto mt-8 inline-flex flex-wrap items-center justify-center gap-1 rounded-lg border border-border bg-surface/60 px-3 py-2 font-mono text-xs text-muted-foreground sm:text-sm">
-          <span className="text-foreground/60">{CDN_BASE}/</span>
-          <span className="rounded bg-primary/15 px-1.5 py-0.5 text-primary">size</span>
-          <span>/</span>
-          <span className="rounded bg-primary/15 px-1.5 py-0.5 text-primary">variant</span>
-          <span>/</span>
-          <span className="rounded bg-primary/15 px-1.5 py-0.5 text-primary">CODE</span>
-          <span>.png</span>
+          {/* Path scheme */}
+          <div className="mx-auto mt-5 inline-flex flex-wrap items-center justify-center gap-1 rounded-lg border border-border bg-surface/60 px-3 py-1.5 font-mono text-xs text-muted-foreground">
+            <span className="text-foreground/60">{CDN_BASE}/</span>
+            <span className="rounded bg-primary/15 px-1.5 py-0.5 text-primary">size</span>
+            <span>/</span>
+            <span className="rounded bg-primary/15 px-1.5 py-0.5 text-primary">variant</span>
+            <span>/</span>
+            <span className="rounded bg-primary/15 px-1.5 py-0.5 text-primary">CODE</span>
+            <span>.png</span>
+          </div>
         </div>
-      </section>
 
-      {/* Snippet card */}
-      <section className="mx-auto max-w-4xl px-6 pb-20">
-        <div className="overflow-hidden rounded-2xl border border-border bg-surface/50 shadow-[0_20px_60px_-20px_rgba(0,0,0,0.5)] backdrop-blur">
+        {/* Snippet card */}
+        <div className="mt-6 overflow-hidden rounded-2xl border border-border bg-surface/50 shadow-[0_20px_60px_-20px_rgba(0,0,0,0.5)] backdrop-blur">
           {/* Toolbar */}
-          <div className="flex flex-col gap-3 border-b border-border bg-surface-elevated/60 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-2 border-b border-border bg-surface-elevated/60 px-4 py-2.5 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-1.5">
               <span className="h-2.5 w-2.5 rounded-full bg-destructive/70" />
               <span className="h-2.5 w-2.5 rounded-full bg-primary/70" />
@@ -202,6 +202,7 @@ function Index() {
                 options={[
                   { value: "32", label: "32" },
                   { value: "64", label: "64" },
+                  { value: "128", label: "128" },
                 ]}
               />
               <Segment
@@ -210,6 +211,7 @@ function Index() {
                 options={[
                   { value: "color", label: "Color" },
                   { value: "black", label: "Black" },
+                  { value: "white", label: "White" },
                 ]}
               />
             </div>
@@ -223,21 +225,19 @@ function Index() {
                 <button
                   key={s.id}
                   onClick={() => setLang(s.id)}
-                  className={`relative px-3 py-2.5 font-mono text-xs transition ${
+                  className={`relative px-3 py-2 font-mono text-xs transition ${
                     active ? "text-foreground" : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   {s.label}
-                  {active && (
-                    <span className="absolute inset-x-2 -bottom-px h-px bg-primary" />
-                  )}
+                  {active && <span className="absolute inset-x-2 -bottom-px h-px bg-primary" />}
                 </button>
               );
             })}
             <div className="ml-auto pr-1">
               <button
                 onClick={copy}
-                className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface/60 px-2.5 py-1.5 text-xs font-medium text-muted-foreground transition hover:text-foreground"
+                className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface/60 px-2.5 py-1 text-xs font-medium text-muted-foreground transition hover:text-foreground"
               >
                 {copied ? (
                   <>
@@ -253,15 +253,14 @@ function Index() {
           </div>
 
           {/* Code */}
-          <div className="relative">
-            <div
-              className="shiki-host overflow-x-auto px-5 py-5 font-mono text-[13px] leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: html || `<pre>${escapeHtml(code)}</pre>` }}
-            />
-          </div>
+          <div
+            className="shiki-host overflow-auto px-5 py-4 font-mono text-[13px] leading-relaxed"
+            style={{ maxHeight: "min(360px, 42vh)" }}
+            dangerouslySetInnerHTML={{ __html: html || `<pre>${escapeHtml(code)}</pre>` }}
+          />
         </div>
 
-        <p className="mx-auto mt-4 max-w-md text-center text-xs text-muted-foreground">
+        <p className="mx-auto mt-3 max-w-md text-center text-xs text-muted-foreground">
           Replace <span className="font-mono text-foreground/80">BTC</span> with any ticker —{" "}
           <span className="font-mono text-foreground/80">ETH</span>,{" "}
           <span className="font-mono text-foreground/80">SOL</span>,{" "}
@@ -269,8 +268,8 @@ function Index() {
         </p>
       </section>
 
-      <footer className="border-t border-border/60 py-8">
-        <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-2 px-6 text-xs text-muted-foreground sm:flex-row">
+      <footer className="border-t border-border/60 py-4">
+        <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-1 px-6 text-xs text-muted-foreground sm:flex-row">
           <span>© {new Date().getFullYear()} cryptons.dev — Free for personal & commercial use.</span>
           <span className="font-mono">Made for developers.</span>
         </div>
