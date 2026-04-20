@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
-import { Check, Copy, Search, Github, Sparkles } from "lucide-react";
-import { CRYPTOS } from "@/lib/cryptos";
+import { useEffect, useMemo, useState } from "react";
+import { Check, Copy, Github, Sparkles } from "lucide-react";
+import { codeToHtml } from "shiki";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -11,7 +11,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Free, open-source cryptocurrency icon set. 70+ coins in color & black, sized 32 & 64px. Copy a CDN URL and ship.",
+          "Free, open-source cryptocurrency icon CDN. 70+ coins in color & black, 32 & 64px. Copy a URL and ship.",
       },
       { property: "og:title", content: "Cryptons — Free Cryptocurrency Icons" },
       {
@@ -30,25 +30,102 @@ function buildPath(size: Size, variant: Variant, code: string) {
   return `${CDN_BASE}/${size}/${variant}/${code}.png`;
 }
 
+type Lang = "html" | "jsx" | "css" | "bash";
+
+const SNIPPETS: { id: Lang; label: string; build: (s: Size, v: Variant) => string }[] = [
+  {
+    id: "html",
+    label: "HTML",
+    build: (s, v) =>
+      `<!-- Drop-in <img>, no build step required -->
+<img
+  src="${buildPath(s, v, "BTC")}"
+  alt="Bitcoin"
+  width="${s}"
+  height="${s}"
+  loading="lazy"
+/>`,
+  },
+  {
+    id: "jsx",
+    label: "React",
+    build: (s, v) =>
+      `import { useMemo } from "react";
+
+const CDN = "${CDN_BASE}";
+
+export function CoinIcon({ code, size = ${s} }: { code: string; size?: number }) {
+  const src = useMemo(
+    () => \`\${CDN}/\${size}/${v}/\${code.toUpperCase()}.png\`,
+    [code, size],
+  );
+  return <img src={src} alt={code} width={size} height={size} loading="lazy" />;
+}
+
+// Usage
+<CoinIcon code="ETH" />`,
+  },
+  {
+    id: "css",
+    label: "CSS",
+    build: (s, v) =>
+      `.coin-btc {
+  width: ${s}px;
+  height: ${s}px;
+  background-image: url("${buildPath(s, v, "BTC")}");
+  background-size: contain;
+  background-repeat: no-repeat;
+}`,
+  },
+  {
+    id: "bash",
+    label: "cURL",
+    build: (s, v) =>
+      `# Download a single icon
+curl -O ${buildPath(s, v, "BTC")}
+
+# Batch download a few coins
+for c in BTC ETH SOL USDC; do
+  curl -O "${CDN_BASE}/${s}/${v}/$c.png"
+done`,
+  },
+];
+
 function Index() {
-  const [query, setQuery] = useState("");
   const [size, setSize] = useState<Size>(64);
   const [variant, setVariant] = useState<Variant>("color");
-  const [copied, setCopied] = useState<string | null>(null);
+  const [lang, setLang] = useState<Lang>("html");
+  const [copied, setCopied] = useState(false);
 
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return CRYPTOS;
-    return CRYPTOS.filter(
-      (c) => c.code.toLowerCase().includes(q) || c.name.toLowerCase().includes(q),
-    );
-  }, [query]);
+  const code = useMemo(() => {
+    const s = SNIPPETS.find((x) => x.id === lang)!;
+    return s.build(size, variant);
+  }, [lang, size, variant]);
 
-  const copy = async (text: string, key: string) => {
+  const [html, setHtml] = useState<string>("");
+
+  useEffect(() => {
+    let cancelled = false;
+    codeToHtml(code, {
+      lang: lang === "jsx" ? "tsx" : lang,
+      theme: "vitesse-dark",
+    })
+      .then((out) => {
+        if (!cancelled) setHtml(out);
+      })
+      .catch(() => {
+        if (!cancelled) setHtml(`<pre><code>${escapeHtml(code)}</code></pre>`);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [code, lang]);
+
+  const copy = async () => {
     try {
-      await navigator.clipboard.writeText(text);
-      setCopied(key);
-      setTimeout(() => setCopied((k) => (k === key ? null : k)), 1400);
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1400);
     } catch {
       // ignore
     }
@@ -57,12 +134,14 @@ function Index() {
   return (
     <main className="min-h-screen">
       {/* Header */}
-      <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
+      <header className="mx-auto flex max-w-5xl items-center justify-between px-6 py-6">
         <div className="flex items-center gap-2">
           <div className="grid h-8 w-8 place-items-center rounded-lg bg-primary/15 text-primary">
             <Sparkles className="h-4 w-4" />
           </div>
-          <span className="font-mono text-sm tracking-tight">cryptons<span className="text-primary">.dev</span></span>
+          <span className="font-mono text-sm tracking-tight">
+            cryptons<span className="text-primary">.dev</span>
+          </span>
         </div>
         <a
           href="https://github.com"
@@ -76,20 +155,19 @@ function Index() {
       </header>
 
       {/* Hero */}
-      <section className="mx-auto max-w-6xl px-6 pt-10 pb-12 text-center sm:pt-16 sm:pb-16">
+      <section className="mx-auto max-w-3xl px-6 pt-10 pb-10 text-center sm:pt-16">
         <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-border bg-surface/50 px-3 py-1 text-xs text-muted-foreground">
           <span className="h-1.5 w-1.5 rounded-full bg-primary" />
           Free & open source · MIT licensed
         </div>
-        <h1 className="mx-auto mt-6 max-w-3xl text-balance text-4xl font-semibold leading-[1.05] tracking-tight sm:text-6xl">
+        <h1 className="mx-auto mt-6 text-balance text-4xl font-semibold leading-[1.05] tracking-tight sm:text-6xl">
           Crypto icons for{" "}
           <span className="bg-gradient-to-r from-primary to-amber-200 bg-clip-text text-transparent">
             every developer.
           </span>
         </h1>
         <p className="mx-auto mt-5 max-w-xl text-balance text-base text-muted-foreground sm:text-lg">
-          A clean, hosted set of {CRYPTOS.length}+ cryptocurrency icons. Copy a URL, drop it in your
-          app. No build step, no signup.
+          A hosted CDN of cryptocurrency icons. Pick a size, pick a style, copy the snippet.
         </p>
 
         {/* Path scheme */}
@@ -104,108 +182,95 @@ function Index() {
         </div>
       </section>
 
-      {/* Controls */}
-      <section className="mx-auto max-w-6xl px-6">
-        <div className="flex flex-col gap-3 rounded-xl border border-border bg-surface/40 p-3 backdrop-blur sm:flex-row sm:items-center">
-          <div className="relative flex-1">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search Bitcoin, ETH, Solana…"
-              className="w-full rounded-lg border border-border bg-background/60 py-2.5 pl-9 pr-3 text-sm outline-none transition placeholder:text-muted-foreground focus:border-primary/60 focus:ring-2 focus:ring-primary/20"
-            />
+      {/* Snippet card */}
+      <section className="mx-auto max-w-4xl px-6 pb-20">
+        <div className="overflow-hidden rounded-2xl border border-border bg-surface/50 shadow-[0_20px_60px_-20px_rgba(0,0,0,0.5)] backdrop-blur">
+          {/* Toolbar */}
+          <div className="flex flex-col gap-3 border-b border-border bg-surface-elevated/60 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-1.5">
+              <span className="h-2.5 w-2.5 rounded-full bg-destructive/70" />
+              <span className="h-2.5 w-2.5 rounded-full bg-primary/70" />
+              <span className="h-2.5 w-2.5 rounded-full bg-emerald-400/70" />
+              <span className="ml-3 font-mono text-xs text-muted-foreground">
+                {lang === "bash" ? "terminal" : `snippet.${lang}`}
+              </span>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <Segment
+                value={String(size)}
+                onChange={(v) => setSize(Number(v) as Size)}
+                options={[
+                  { value: "32", label: "32" },
+                  { value: "64", label: "64" },
+                ]}
+              />
+              <Segment
+                value={variant}
+                onChange={(v) => setVariant(v as Variant)}
+                options={[
+                  { value: "color", label: "Color" },
+                  { value: "black", label: "Black" },
+                ]}
+              />
+            </div>
           </div>
 
-          <div className="flex gap-2">
-            <SegmentGroup
-              value={String(size)}
-              onChange={(v) => setSize(Number(v) as Size)}
-              options={[
-                { value: "32", label: "32px" },
-                { value: "64", label: "64px" },
-              ]}
-            />
-            <SegmentGroup
-              value={variant}
-              onChange={(v) => setVariant(v as Variant)}
-              options={[
-                { value: "color", label: "Color" },
-                { value: "black", label: "Black" },
-              ]}
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* Grid */}
-      <section className="mx-auto max-w-6xl px-6 py-10">
-        {filtered.length === 0 ? (
-          <div className="rounded-xl border border-border bg-surface/40 p-12 text-center text-sm text-muted-foreground">
-            No icons match "{query}".
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-            {filtered.map((c) => {
-              const url = buildPath(size, variant, c.code);
-              const isCopied = copied === c.code;
+          {/* Tabs */}
+          <div className="flex items-center gap-1 border-b border-border bg-background/40 px-2">
+            {SNIPPETS.map((s) => {
+              const active = s.id === lang;
               return (
                 <button
-                  key={c.code}
-                  onClick={() => copy(url, c.code)}
-                  className="group relative flex flex-col items-center gap-3 overflow-hidden rounded-xl border border-border bg-surface/40 p-5 text-left transition hover:-translate-y-0.5 hover:border-primary/40 hover:bg-surface-elevated"
+                  key={s.id}
+                  onClick={() => setLang(s.id)}
+                  className={`relative px-3 py-2.5 font-mono text-xs transition ${
+                    active ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+                  }`}
                 >
-                  <div className="grid h-16 w-16 place-items-center rounded-full bg-background/60 ring-1 ring-border transition group-hover:ring-primary/30">
-                    <CryptoMark code={c.code} variant={variant} />
-                  </div>
-                  <div className="w-full text-center">
-                    <div className="font-mono text-sm font-medium tracking-tight">{c.code}</div>
-                    <div className="truncate text-xs text-muted-foreground">{c.name}</div>
-                  </div>
-                  <div
-                    className={`absolute inset-x-3 bottom-3 flex items-center justify-center gap-1.5 rounded-md bg-background/80 py-1.5 text-[11px] font-medium backdrop-blur transition ${
-                      isCopied
-                        ? "text-primary opacity-100"
-                        : "text-muted-foreground opacity-0 group-hover:opacity-100"
-                    }`}
-                  >
-                    {isCopied ? (
-                      <>
-                        <Check className="h-3 w-3" /> Copied URL
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="h-3 w-3" /> Copy URL
-                      </>
-                    )}
-                  </div>
+                  {s.label}
+                  {active && (
+                    <span className="absolute inset-x-2 -bottom-px h-px bg-primary" />
+                  )}
                 </button>
               );
             })}
+            <div className="ml-auto pr-1">
+              <button
+                onClick={copy}
+                className="inline-flex items-center gap-1.5 rounded-md border border-border bg-surface/60 px-2.5 py-1.5 text-xs font-medium text-muted-foreground transition hover:text-foreground"
+              >
+                {copied ? (
+                  <>
+                    <Check className="h-3 w-3 text-primary" /> Copied
+                  </>
+                ) : (
+                  <>
+                    <Copy className="h-3 w-3" /> Copy
+                  </>
+                )}
+              </button>
+            </div>
           </div>
-        )}
-      </section>
 
-      {/* Usage */}
-      <section className="mx-auto max-w-6xl px-6 pb-16">
-        <div className="grid gap-4 md:grid-cols-2">
-          <CodeBlock
-            title="HTML"
-            code={`<img src="${buildPath(size, variant, "BTC")}" alt="Bitcoin" width="${size}" height="${size}" />`}
-            onCopy={(t) => copy(t, "snippet-html")}
-            copied={copied === "snippet-html"}
-          />
-          <CodeBlock
-            title="React / JSX"
-            code={`<img\n  src="${buildPath(size, variant, "ETH")}"\n  alt="Ethereum"\n  width={${size}}\n  height={${size}}\n/>`}
-            onCopy={(t) => copy(t, "snippet-jsx")}
-            copied={copied === "snippet-jsx"}
-          />
+          {/* Code */}
+          <div className="relative">
+            <div
+              className="shiki-host overflow-x-auto px-5 py-5 font-mono text-[13px] leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: html || `<pre>${escapeHtml(code)}</pre>` }}
+            />
+          </div>
         </div>
+
+        <p className="mx-auto mt-4 max-w-md text-center text-xs text-muted-foreground">
+          Replace <span className="font-mono text-foreground/80">BTC</span> with any ticker —{" "}
+          <span className="font-mono text-foreground/80">ETH</span>,{" "}
+          <span className="font-mono text-foreground/80">SOL</span>,{" "}
+          <span className="font-mono text-foreground/80">USDC</span>, and more.
+        </p>
       </section>
 
       <footer className="border-t border-border/60 py-8">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 px-6 text-xs text-muted-foreground sm:flex-row">
+        <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-2 px-6 text-xs text-muted-foreground sm:flex-row">
           <span>© {new Date().getFullYear()} cryptons.dev — Free for personal & commercial use.</span>
           <span className="font-mono">Made for developers.</span>
         </div>
@@ -214,7 +279,7 @@ function Index() {
   );
 }
 
-function SegmentGroup({
+function Segment({
   value,
   onChange,
   options,
@@ -224,14 +289,14 @@ function SegmentGroup({
   options: { value: string; label: string }[];
 }) {
   return (
-    <div className="inline-flex rounded-lg border border-border bg-background/60 p-0.5">
+    <div className="inline-flex rounded-md border border-border bg-background/60 p-0.5">
       {options.map((o) => {
         const active = o.value === value;
         return (
           <button
             key={o.value}
             onClick={() => onChange(o.value)}
-            className={`rounded-md px-3 py-1.5 text-xs font-medium transition ${
+            className={`rounded-[5px] px-2.5 py-1 text-xs font-medium transition ${
               active
                 ? "bg-primary text-primary-foreground"
                 : "text-muted-foreground hover:text-foreground"
@@ -245,66 +310,9 @@ function SegmentGroup({
   );
 }
 
-function CodeBlock({
-  title,
-  code,
-  onCopy,
-  copied,
-}: {
-  title: string;
-  code: string;
-  onCopy: (text: string) => void;
-  copied: boolean;
-}) {
-  return (
-    <div className="overflow-hidden rounded-xl border border-border bg-surface/40">
-      <div className="flex items-center justify-between border-b border-border px-4 py-2.5">
-        <span className="font-mono text-xs text-muted-foreground">{title}</span>
-        <button
-          onClick={() => onCopy(code)}
-          className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-xs text-muted-foreground transition hover:bg-background/60 hover:text-foreground"
-        >
-          {copied ? <Check className="h-3 w-3 text-primary" /> : <Copy className="h-3 w-3" />}
-          {copied ? "Copied" : "Copy"}
-        </button>
-      </div>
-      <pre className="overflow-x-auto p-4 font-mono text-xs leading-relaxed text-foreground/90">
-        <code>{code}</code>
-      </pre>
-    </div>
-  );
-}
-
-/**
- * Inline SVG fallback "mark" rendered for each coin.
- * Since the CDN is illustrative, we render a deterministic colored monogram so
- * the grid looks polished without external image requests.
- */
-function CryptoMark({ code, variant }: { code: string; variant: Variant }) {
-  // Hash code -> hue
-  let h = 0;
-  for (let i = 0; i < code.length; i++) h = (h * 31 + code.charCodeAt(i)) % 360;
-  const bg =
-    variant === "black"
-      ? "oklch(0.18 0.01 250)"
-      : `oklch(0.62 0.16 ${h})`;
-  const fg = variant === "black" ? "oklch(0.97 0 0)" : "oklch(0.18 0.02 250)";
-  const label = code.length <= 4 ? code : code.slice(0, 3);
-  return (
-    <svg viewBox="0 0 64 64" className="h-12 w-12">
-      <circle cx="32" cy="32" r="30" fill={bg} />
-      <text
-        x="50%"
-        y="50%"
-        dominantBaseline="central"
-        textAnchor="middle"
-        fontFamily="JetBrains Mono, ui-monospace, monospace"
-        fontWeight="600"
-        fontSize={label.length >= 4 ? 16 : 20}
-        fill={fg}
-      >
-        {label}
-      </text>
-    </svg>
-  );
+function escapeHtml(s: string) {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
 }
