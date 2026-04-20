@@ -3,20 +3,72 @@ import { useEffect, useMemo, useState } from "react";
 import { Check, Copy, Github, Sparkles } from "lucide-react";
 import { codeToHtml } from "shiki";
 
+const SITE_URL = "https://cryptons.dev";
+const SITE_TITLE =
+  "Cryptons — Free Cryptocurrency Icons CDN for Developers (BTC, ETH, SOL & 70+)";
+const SITE_DESCRIPTION =
+  "Free, open-source cryptocurrency icons hosted on a fast CDN. 70+ coins (Bitcoin, Ethereum, Solana, USDC) in color, black & white variants at 32, 64 and 128 px. MIT licensed — copy a URL and ship.";
+const SITE_KEYWORDS =
+  "cryptocurrency icons, crypto icons, free crypto icons, bitcoin icon, ethereum icon, solana icon, crypto logo, coin icons, crypto icon CDN, open source crypto icons, png crypto icons, developer crypto assets";
+
 export const Route = createFileRoute("/")({
   component: Index,
   head: () => ({
     meta: [
-      { title: "Cryptons — Free Cryptocurrency Icons for Developers" },
+      { title: SITE_TITLE },
+      { name: "description", content: SITE_DESCRIPTION },
+      { name: "keywords", content: SITE_KEYWORDS },
+      { name: "author", content: "Cryptons" },
+
+      { property: "og:title", content: SITE_TITLE },
+      { property: "og:description", content: SITE_DESCRIPTION },
+      { property: "og:url", content: SITE_URL },
+      { property: "og:type", content: "website" },
+      { property: "og:image", content: `${SITE_URL}/og-image.png` },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { property: "og:image:alt", content: "Cryptons — free cryptocurrency icons CDN" },
+
+      { name: "twitter:title", content: SITE_TITLE },
+      { name: "twitter:description", content: SITE_DESCRIPTION },
+      { name: "twitter:image", content: `${SITE_URL}/og-image.png` },
+      { name: "twitter:image:alt", content: "Cryptons — free cryptocurrency icons CDN" },
+    ],
+    links: [{ rel: "canonical", href: SITE_URL }],
+    scripts: [
       {
-        name: "description",
-        content:
-          "Free, open-source cryptocurrency icon CDN. 70+ coins in color & black, 32 & 64px. Copy a URL and ship.",
-      },
-      { property: "og:title", content: "Cryptons — Free Cryptocurrency Icons" },
-      {
-        property: "og:description",
-        content: "Copy-paste CDN URLs for 70+ crypto icons. Free for any project.",
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebSite",
+              "@id": `${SITE_URL}/#website`,
+              url: SITE_URL,
+              name: "Cryptons",
+              description: SITE_DESCRIPTION,
+              inLanguage: "en",
+              publisher: { "@id": `${SITE_URL}/#org` },
+            },
+            {
+              "@type": "Organization",
+              "@id": `${SITE_URL}/#org`,
+              name: "Cryptons",
+              url: SITE_URL,
+              logo: `${SITE_URL}/icon-512.png`,
+            },
+            {
+              "@type": "SoftwareApplication",
+              name: "Cryptons Icons",
+              applicationCategory: "DeveloperApplication",
+              operatingSystem: "Any",
+              description: SITE_DESCRIPTION,
+              url: SITE_URL,
+              license: "https://opensource.org/licenses/MIT",
+              offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+            },
+          ],
+        }),
       },
     ],
   }),
