@@ -23,8 +23,8 @@ export const Route = createFileRoute("/")({
 });
 
 const CDN_BASE = "https://cdn.cryptons.dev";
-type Size = 32 | 64;
-type Variant = "color" | "black";
+type Size = 32 | 64 | 128;
+type Variant = "color" | "black" | "white";
 
 function buildPath(size: Size, variant: Variant, code: string) {
   return `${CDN_BASE}/${size}/${variant}/${code}.png`;
@@ -132,9 +132,9 @@ function Index() {
   };
 
   return (
-    <main className="min-h-screen">
+    <main className="flex min-h-screen flex-col">
       {/* Header */}
-      <header className="mx-auto flex max-w-5xl items-center justify-between px-6 py-6">
+      <header className="mx-auto flex w-full max-w-5xl items-center justify-between px-6 py-5">
         <div className="flex items-center gap-2">
           <div className="grid h-8 w-8 place-items-center rounded-lg bg-primary/15 text-primary">
             <Sparkles className="h-4 w-4" />
