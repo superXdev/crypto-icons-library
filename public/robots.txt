@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://cryptons.dev/sitemap.xml
+Sitemap: https://icon.coin2trans.com/sitemap.xml
