@@ -85,6 +85,16 @@
     border-color: var(--color-border);
   }
 
+  .shiki-host pre.shiki {
+    background-color: transparent !important;
+    margin: 0;
+    padding: 0;
+  }
+  .shiki-host pre.shiki code {
+    display: block;
+    background: transparent;
+  }
+
   html {
     color-scheme: dark;
   }
