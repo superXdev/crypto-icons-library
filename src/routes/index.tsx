@@ -18,9 +18,9 @@ const SITE_URL = "https://icon.coin2trans.com";
 const SITE_TITLE =
   "Coin2Trans Icon — Free Cryptocurrency Icons CDN for Developers (BTC, ETH, SOL & 70+)";
 const SITE_DESCRIPTION =
-  "Free, open-source cryptocurrency icons hosted on a fast CDN. 70+ coins (Bitcoin, Ethereum, Solana, USDC) in color, black & white variants at 32, 64 and 128 px. MIT licensed — copy a URL and ship.";
+  "Free, open-source cryptocurrency icons hosted on a fast CDN. 70+ coins (Bitcoin, Ethereum, Solana, USDC) in color, black & white SVG variants. MIT licensed — copy a URL and ship.";
 const SITE_KEYWORDS =
-  "cryptocurrency icons, crypto icons, free crypto icons, bitcoin icon, ethereum icon, solana icon, crypto logo, coin icons, crypto icon CDN, open source crypto icons, png crypto icons, developer crypto assets";
+  "cryptocurrency icons, crypto icons, free crypto icons, bitcoin icon, ethereum icon, solana icon, crypto logo, coin icons, crypto icon CDN, open source crypto icons, svg crypto icons, developer crypto assets";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -85,57 +85,54 @@ export const Route = createFileRoute("/")({
   }),
 });
 
-const CDN_BASE = "https://cdn.cryptons.dev";
-type Size = 32 | 64 | 128;
+const CDN_BASE = "https://icon.coin2trans.com";
 type Variant = "color" | "black" | "white";
 
-function buildPath(size: Size, variant: Variant, code: string) {
-  return `${CDN_BASE}/${size}/${variant}/${code}.png`;
+function buildPath(variant: Variant, code: string) {
+  return `${CDN_BASE}/${variant}/${code}.svg`;
 }
 
 type Lang = "html" | "jsx" | "css" | "bash";
 
-const SNIPPETS: { id: Lang; label: string; build: (s: Size, v: Variant) => string }[] = [
+const SNIPPETS: { id: Lang; label: string; build: (v: Variant) => string }[] = [
   {
     id: "html",
     label: "HTML",
-    build: (s, v) =>
+    build: (v) =>
       `<!-- Drop-in <img>, no build step required -->
 <img
-  src="${buildPath(s, v, "BTC")}"
+  src="${buildPath(v, "btc")}"
   alt="Bitcoin"
-  width="${s}"
-  height="${s}"
   loading="lazy"
 />`,
   },
   {
     id: "jsx",
     label: "React",
-    build: (s, v) =>
+    build: (v) =>
       `import { useMemo } from "react";
 
 const CDN = "${CDN_BASE}";
 
-export function CoinIcon({ code, size = ${s} }: { code: string; size?: number }) {
+export function CoinIcon({ code, size = 64 }: { code: string; size?: number }) {
   const src = useMemo(
-    () => \`\${CDN}/\${size}/${v}/\${code.toUpperCase()}.png\`,
+    () => \`\${CDN}/${v}/\${code}.svg\`,
     [code, size],
   );
   return <img src={src} alt={code} width={size} height={size} loading="lazy" />;
 }
 
 // Usage
-<CoinIcon code="ETH" />`,
+<CoinIcon code="eth" />`,
   },
   {
     id: "css",
     label: "CSS",
-    build: (s, v) =>
+    build: (v) =>
       `.coin-btc {
-  width: ${s}px;
-  height: ${s}px;
-  background-image: url("${buildPath(s, v, "BTC")}");
+  width: 64px;
+  height: 64px;
+  background-image: url("${buildPath(v, "btc")}");
   background-size: contain;
   background-repeat: no-repeat;
 }`,
@@ -143,27 +140,26 @@ export function CoinIcon({ code, size = ${s} }: { code: string; size?: number })
   {
     id: "bash",
     label: "cURL",
-    build: (s, v) =>
+    build: (v) =>
       `# Download a single icon
-curl -O ${buildPath(s, v, "BTC")}
+curl -O ${buildPath(v, "btc")}
 
 # Batch download a few coins
-for c in BTC ETH SOL USDC; do
-  curl -O "${CDN_BASE}/${s}/${v}/$c.png"
+for c in btc eth sol usdc; do
+  curl -O "${CDN_BASE}/${v}/$c.svg"
 done`,
   },
 ];
 
 function Index() {
-  const [size, setSize] = useState<Size>(64);
   const [variant, setVariant] = useState<Variant>("color");
   const [lang, setLang] = useState<Lang>("html");
   const [copied, setCopied] = useState(false);
 
   const code = useMemo(() => {
     const s = SNIPPETS.find((x) => x.id === lang)!;
-    return s.build(size, variant);
-  }, [lang, size, variant]);
+    return s.build(variant);
+  }, [lang, variant]);
 
   const [html, setHtml] = useState<string>("");
 
@@ -233,18 +229,16 @@ function Index() {
             </span>
           </h1>
           <p className="mx-auto mt-3 max-w-xl text-balance text-sm text-muted-foreground sm:text-base">
-            A hosted CDN of cryptocurrency icons. Pick a size, pick a style, copy the snippet.
+            A hosted CDN of cryptocurrency icons. Pick a style, copy the snippet.
           </p>
 
           {/* Path scheme */}
           <div className="mx-auto mt-5 inline-flex flex-wrap items-center justify-center gap-1 rounded-lg border border-border bg-surface/60 px-3 py-1.5 font-mono text-xs text-muted-foreground">
             <span className="text-foreground/60">{CDN_BASE}/</span>
-            <span className="rounded bg-primary/15 px-1.5 py-0.5 text-primary">size</span>
-            <span>/</span>
             <span className="rounded bg-primary/15 px-1.5 py-0.5 text-primary">variant</span>
             <span>/</span>
             <span className="rounded bg-primary/15 px-1.5 py-0.5 text-primary">CODE</span>
-            <span>.png</span>
+            <span>.svg</span>
           </div>
         </div>
 
@@ -261,15 +255,6 @@ function Index() {
               </span>
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              <Segment
-                value={String(size)}
-                onChange={(v) => setSize(Number(v) as Size)}
-                options={[
-                  { value: "32", label: "32" },
-                  { value: "64", label: "64" },
-                  { value: "128", label: "128" },
-                ]}
-              />
               <Segment
                 value={variant}
                 onChange={(v) => setVariant(v as Variant)}
@@ -326,10 +311,10 @@ function Index() {
         </div>
 
         <p className="mx-auto mt-3 max-w-md text-center text-xs text-muted-foreground">
-          Replace <span className="font-mono text-foreground/80">BTC</span> with any ticker —{" "}
-          <span className="font-mono text-foreground/80">ETH</span>,{" "}
-          <span className="font-mono text-foreground/80">SOL</span>,{" "}
-          <span className="font-mono text-foreground/80">USDC</span>, and more.
+          Replace <span className="font-mono text-foreground/80">btc</span> with any ticker —{" "}
+          <span className="font-mono text-foreground/80">eth</span>,{" "}
+          <span className="font-mono text-foreground/80">sol</span>,{" "}
+          <span className="font-mono text-foreground/80">usdc</span>, and more.
         </p>
       </section>
 
