@@ -2,6 +2,11 @@
 
 Lightweight developer-focused CDN page and snippet generator for cryptocurrency icons.
 
+## 400+ icon collection
+
+This library provides access to 400+ cryptocurrency icons through a simple CDN URL pattern.
+The upstream icon dataset from `spothq/cryptocurrency-icons` covers almost 500 currencies and altcoins, and this project focuses on serving those assets in a developer-friendly way.
+
 ## Source of icons
 
 This project uses icon assets sourced from `spothq/cryptocurrency-icons`:

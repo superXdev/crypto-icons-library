@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Check, Coins, Copy, Github } from "lucide-react";
+import { Check, Copy, Github } from "lucide-react";
 import { createHighlighter, type Highlighter } from "shiki";
 
 let highlighterPromise: Promise<Highlighter> | null = null;
@@ -16,11 +16,11 @@ function getHighlighter() {
 
 const SITE_URL = "https://icon.coin2trans.com";
 const SITE_TITLE =
-  "Coin2Trans Icon — Free Cryptocurrency Icons CDN for Developers (BTC, ETH, SOL & 70+)";
+  "Coin2Trans Icon — Free 400+ Cryptocurrency Icons CDN for Developers";
 const SITE_DESCRIPTION =
-  "Free, open-source cryptocurrency icons hosted on a fast CDN. 70+ coins (Bitcoin, Ethereum, Solana, USDC) in color, black & white SVG variants. MIT licensed — copy a URL and ship.";
+  "Free, open-source cryptocurrency icons hosted on a fast CDN. 400+ icons in color, black & white SVG variants. Source icons by spothq/cryptocurrency-icons. MIT licensed — copy a URL and ship.";
 const SITE_KEYWORDS =
-  "cryptocurrency icons, crypto icons, free crypto icons, bitcoin icon, ethereum icon, solana icon, crypto logo, coin icons, crypto icon CDN, open source crypto icons, svg crypto icons, developer crypto assets";
+  "cryptocurrency icons, crypto icons, 400+ crypto icons, free crypto icons, bitcoin icon, ethereum icon, solana icon, crypto logo, coin icons, crypto icon CDN, open source crypto icons, svg crypto icons, spothq cryptocurrency-icons, developer crypto assets";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -58,6 +58,7 @@ export const Route = createFileRoute("/")({
               url: SITE_URL,
               name: "Coin2Trans Icon",
               description: SITE_DESCRIPTION,
+              about: "400+ cryptocurrency icon collection for developers",
               inLanguage: "en",
               publisher: { "@id": `${SITE_URL}/#org` },
             },
@@ -75,6 +76,7 @@ export const Route = createFileRoute("/")({
               operatingSystem: "Any",
               description: SITE_DESCRIPTION,
               url: SITE_URL,
+              isBasedOn: "https://github.com/spothq/cryptocurrency-icons",
               license: "https://opensource.org/licenses/MIT",
               offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
             },
@@ -210,9 +212,13 @@ function Index() {
       {/* Header */}
       <header className="mx-auto flex w-full max-w-5xl items-center justify-between px-6 py-5">
         <div className="flex items-center gap-2">
-          <div className="grid h-8 w-8 place-items-center rounded-lg bg-primary/15 text-primary">
-            <Coins className="h-4 w-4" />
-          </div>
+          <img
+            src="/logo.png"
+            alt="Coin2Trans Icon logo"
+            width={32}
+            height={32}
+            className="h-8 w-8 rounded-lg object-cover"
+          />
           <span className="font-mono text-sm tracking-tight">
             coin2trans<span className="text-primary"> icon</span>
           </span>
@@ -242,7 +248,7 @@ function Index() {
             </span>
           </h1>
           <p className="mx-auto mt-3 max-w-xl text-balance text-sm text-muted-foreground sm:text-base">
-            A hosted CDN of cryptocurrency icons. Pick a style, copy the snippet.
+            A hosted CDN of 400+ cryptocurrency icons. Pick a style, copy the snippet.
           </p>
 
           {/* Path scheme */}
