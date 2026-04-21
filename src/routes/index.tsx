@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Check, Copy, Github, Sparkles } from "lucide-react";
+import { Check, Coins, Copy, Github } from "lucide-react";
 import { createHighlighter, type Highlighter } from "shiki";
 
 let highlighterPromise: Promise<Highlighter> | null = null;
@@ -211,14 +211,14 @@ function Index() {
       <header className="mx-auto flex w-full max-w-5xl items-center justify-between px-6 py-5">
         <div className="flex items-center gap-2">
           <div className="grid h-8 w-8 place-items-center rounded-lg bg-primary/15 text-primary">
-            <Sparkles className="h-4 w-4" />
+            <Coins className="h-4 w-4" />
           </div>
           <span className="font-mono text-sm tracking-tight">
             coin2trans<span className="text-primary"> icon</span>
           </span>
         </div>
         <a
-          href="https://github.com"
+          href="https://github.com/superXdev/crypto-icons-libraries"
           target="_blank"
           rel="noreferrer"
           className="inline-flex items-center gap-2 rounded-md border border-border bg-surface/60 px-3 py-1.5 text-xs text-muted-foreground transition hover:text-foreground"

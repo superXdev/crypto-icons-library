@@ -3,6 +3,10 @@
   "private": true,
   "sideEffects": false,
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/superXdev/crypto-icons-libraries"
+  },
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
