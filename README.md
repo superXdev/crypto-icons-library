@@ -2,6 +2,8 @@
 
 Lightweight developer-focused CDN page and snippet generator for cryptocurrency icons.
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+
 ## 400+ icon collection
 
 This library provides access to 400+ cryptocurrency icons through a simple CDN URL pattern.
@@ -128,3 +130,7 @@ Check:
 - Worker URL responds successfully
 - Root app loads correctly
 - Sample icon URLs resolve, such as `https://icon.coin2trans.com/color/btc.svg`
+
+## License
+
+This project is licensed under the MIT License. See [`LICENSE`](./LICENSE).
