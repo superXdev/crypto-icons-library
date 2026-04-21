@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Check, Copy, Github, Sparkles } from "lucide-react";
 import { createHighlighter, type Highlighter } from "shiki";
 
@@ -117,7 +117,7 @@ const CDN = "${CDN_BASE}";
 export function CoinIcon({ code, size = 64 }: { code: string; size?: number }) {
   const src = useMemo(
     () => \`\${CDN}/${v}/\${code}.svg\`,
-    [code, size],
+    [code],
   );
   return <img src={src} alt={code} width={size} height={size} loading="lazy" />;
 }
@@ -155,6 +155,7 @@ function Index() {
   const [variant, setVariant] = useState<Variant>("color");
   const [lang, setLang] = useState<Lang>("html");
   const [copied, setCopied] = useState(false);
+  const copyResetTimeoutRef = useRef<number | null>(null);
 
   const code = useMemo(() => {
     const s = SNIPPETS.find((x) => x.id === lang)!;
@@ -186,11 +187,23 @@ function Index() {
     try {
       await navigator.clipboard.writeText(code);
       setCopied(true);
-      setTimeout(() => setCopied(false), 1400);
+      if (copyResetTimeoutRef.current !== null) {
+        window.clearTimeout(copyResetTimeoutRef.current);
+      }
+      copyResetTimeoutRef.current = window.setTimeout(() => setCopied(false), 1400);
     } catch {
       // ignore
     }
   };
+
+  useEffect(
+    () => () => {
+      if (copyResetTimeoutRef.current !== null) {
+        window.clearTimeout(copyResetTimeoutRef.current);
+      }
+    },
+    [],
+  );
 
   return (
     <main className="flex min-h-screen flex-col">
