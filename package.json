@@ -5,7 +5,7 @@
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "https://github.com/superXdev/crypto-icons-libraries"
+    "url": "https://github.com/superXdev/crypto-icons-library"
   },
   "scripts": {
     "dev": "vite dev",
